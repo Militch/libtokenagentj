@@ -49,7 +49,6 @@ TokenAgentClient tokenAgentClient = new TokenAgentClient(rpcClient, "ETH_MAINNET
 |:-------------------|:-----------------------|
 | ETH_MAINNET        | 以太坊 MAINNET - 主网       |
 | ETH_RINKEBY        | 以太坊 RINKEBY - 测试网      |
-| ETH_GANACHE        | 以太坊 GANACHE - 测试网      |
 | ETH_POLYGON        | 以太坊协议 POLYGON 侧链 - 主网  |
 | ETH_POLYGON_MUMBAI | 以太坊协议 POLYGON 侧链 - 测试网 |
 
