@@ -40,10 +40,23 @@ public interface ERC20Caller {
      */
     BigInteger getBalance(Address address) throws Exception;
 
-    Hash approve(Address fromAddress, );
+    /**
+     * 授权
+     * @param spender 授予地址
+     * @param amount 额度
+     * @return 交易HASH
+     */
+    Hash approve(Address spender, BigInteger amount, byte[] privateKey) throws Exception;
+
+    /**
+     * 授权额度
+     * @param spender 授予地址
+     * @param amount 额度
+     * @return 交易HASH
+     */
+    Hash increaseAllowance(Address spender, BigInteger amount, byte[] privateKey) throws Exception;
     /**
      * 转移通证余额
-     * @param fromAddress 源地址
      * @param toAddress 目的地址
      * @param amount 转移额度
      * @param privateKey 签名私钥

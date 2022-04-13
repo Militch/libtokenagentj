@@ -54,7 +54,7 @@ public class ERC20TokenCallerUsage {
         assert symbol != null && symbol.equals(params.getSymbol());
         // 发起铸造
         ERC20TokenMintParam mintParam = new ERC20TokenMintParam();
-        Address toAddress = keyStorage[1].getAddress();
+        Address toAddress = keyStorage[0].getAddress();
         mintParam.setToAddress(toAddress);
         // 设置铸造额度（单位：10^-18）
         mintParam.setAmount(BigInteger.valueOf(1000));
@@ -64,7 +64,16 @@ public class ERC20TokenCallerUsage {
         // 模拟等待
         Thread.sleep(60 * 1000);
         log.info("Successfully mint ERC20 Token: ContractAddress={}", contractAddress.toHexString(true));
-        // 以上示例为创建并铸造 ERC20 代币
+        // 授予额度
+        byte[] sendKey = keyStorage[0].getPrivateKey();
+        Hash increaseAllowanceHash = erc20TokenCaller.increaseAllowance(toAddress, mintParam.getAmount(), sendKey);
+        log.info("Increase allowance to address {}: amount={}, ContractAddress={}, wait for mint: TxHash={}",
+                toAddress.toHexString(true), mintParam.getAmount().toString(10),
+                contractAddress.toHexString(true), increaseAllowanceHash.toHexString(true));
+        Thread.sleep(60 * 1000);
+        log.info("Successfully increase allowance to address {}: amount={}, ContractAddress={}",
+                toAddress.toHexString(true), mintParam.getAmount().toString(10),
+                contractAddress.toHexString(true));
         // 以下为业务层常见业务代码
         // 查询总供给量
         BigInteger totalSupply = erc20TokenCaller.getTotalSupply();
@@ -73,15 +82,20 @@ public class ERC20TokenCallerUsage {
         BigInteger balance = erc20TokenCaller.getBalance(toAddress);
         assert balance != null && balance.equals(totalSupply);
         // 转移通证
-        Address address = keyStorage[2].getAddress();
+        Address otherAddress = keyStorage[1].getAddress();
         BigInteger transferAmount = BigInteger.valueOf(10);
-        byte[] sendKey = keyStorage[1].getPrivateKey();
-        Hash hash = erc20TokenCaller.transferFrom(address, transferAmount, sendKey);
+        Hash hash = erc20TokenCaller.transferFrom(otherAddress, transferAmount, sendKey);
         log.info("Transfer ERC20-Token to address: {}, fromAddress={}, Amount={}, ContractAddress={} wait for mint: txHash={}",
-                toAddress.toHexString(true), address.toHexString(true), transferAmount.toString(10),
-                contractAddress, hash);
+                toAddress.toHexString(true), otherAddress.toHexString(true), transferAmount.toString(10),
+                contractAddress.toHexString(true), hash);
         // 模拟等待
         Thread.sleep(60 * 1000);
-        log.info("Finish");
+        log.info("Successfully Transfer ERC20-Token to address: {}, fromAddress={}, Amount={}, ContractAddress={}",
+                toAddress.toHexString(true), otherAddress.toHexString(true), transferAmount.toString(10),
+                contractAddress.toHexString(true));
+        // 查询并校验余额
+        BigInteger balanceOfOtherAddress = erc20TokenCaller.getBalance(otherAddress);
+        assert balanceOfOtherAddress != null && balanceOfOtherAddress.equals(transferAmount);
+        log.info("Finish.");
     }
 }

@@ -31,4 +31,10 @@ public class ERC20TokenService {
     public CodeResp requestPreTransferFrom(ERC20TokenTransferRequest request) throws Exception {
         return client.call("Token.PreTransferFrom", request, CodeResp.class);
     }
+    public CodeResp requestPreApprove(ERC20TokenPreApproveRequest request) throws Exception {
+        return client.call("Token.PreApprove", request, CodeResp.class);
+    }
+    public CodeResp requestPreIncreaseAllowance(ERC20TokenPreIncreaseAllowanceRequest request) throws Exception {
+        return client.call("Token.PreIncreaseAllowance", request, CodeResp.class);
+    }
 }

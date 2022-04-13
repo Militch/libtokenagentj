@@ -8,10 +8,7 @@ import com.esiran.libtokenagentj.common.Hash;
 import com.esiran.libtokenagentj.jsonrpc.RPCClient;
 import com.esiran.libtokenagentj.service.ChainService;
 import com.esiran.libtokenagentj.service.ERC20TokenService;
-import com.esiran.libtokenagentj.service.params.ContractCallRequest;
-import com.esiran.libtokenagentj.service.params.ERC20TokenPreMintRequest;
-import com.esiran.libtokenagentj.service.params.ERC20TokenTransferRequest;
-import com.esiran.libtokenagentj.service.params.TokenBalanceOfRequest;
+import com.esiran.libtokenagentj.service.params.*;
 import com.esiran.libtokenagentj.util.AddressUtil;
 
 import java.math.BigInteger;
@@ -86,6 +83,36 @@ public class ERC20TokenCaller implements ERC20Caller {
         request.setAccount(address.toHexString(true));
         String balance = tokenService.getBalanceOf(request);
         return new BigInteger(balance);
+    }
+
+    @Override
+    public Hash approve(Address spender, BigInteger amount, byte[] privateKey) throws Exception {
+        ERC20TokenPreApproveRequest request = new ERC20TokenPreApproveRequest();
+        request.setBlockchain(blockchain);
+        Address contractAddress = callerParams.getContractAddress();
+        request.setContractAddress(contractAddress.toHexString(true));
+        Address fromAddress = AddressUtil.getAddressFromPrivateKey(privateKey);
+        request.setFromAddress(fromAddress.toHexString(true));
+        request.setSpenderAddress(spender.toHexString(true));
+        request.setAmount(amount.toString(10));
+        CodeResp codeResp = tokenService.requestPreApprove(request);
+        return chainService.createAndSendTransaction(codeResp, blockchain,
+                contractAddress.toHexString(true), privateKey);
+    }
+
+    @Override
+    public Hash increaseAllowance(Address spender, BigInteger amount, byte[] privateKey) throws Exception {
+        ERC20TokenPreIncreaseAllowanceRequest request = new ERC20TokenPreIncreaseAllowanceRequest();
+        request.setBlockchain(blockchain);
+        Address contractAddress = callerParams.getContractAddress();
+        request.setContractAddress(contractAddress.toHexString(true));
+        Address fromAddress = AddressUtil.getAddressFromPrivateKey(privateKey);
+        request.setFromAddress(fromAddress.toHexString(true));
+        request.setSpenderAddress(spender.toHexString(true));
+        request.setValue(amount.toString(10));
+        CodeResp codeResp = tokenService.requestPreIncreaseAllowance(request);
+        return chainService.createAndSendTransaction(codeResp, blockchain,
+                contractAddress.toHexString(true), privateKey);
     }
 
     @Override
