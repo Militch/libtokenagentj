@@ -1,6 +1,7 @@
 package com.esiran.libtokenagentj.core;
 
 
+import com.esiran.libtokenagentj.caller.ERC20TokenCallerParams;
 import com.esiran.libtokenagentj.caller.TokenCallerParams;
 import com.esiran.libtokenagentj.caller.CollectionCallerParams;
 import com.esiran.libtokenagentj.service.ERC20TokenService;
@@ -101,6 +102,11 @@ public class TokenAgentClient implements ERC721AgentClient {
         result.setTransactionHash(txHash);
         result.setContractAddress(contractAddress);
         return result;
+    }
+
+    @Override
+    public ERC20TokenCaller newERC20Token(ERC20TokenCallerParams params) {
+        return new ERC20TokenCaller(rpcClient, blockchain, params);
     }
 
 
