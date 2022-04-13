@@ -3,6 +3,7 @@ package com.esiran.libtokenagentj.core;
 
 import com.esiran.libtokenagentj.caller.TokenCallerParams;
 import com.esiran.libtokenagentj.caller.CollectionCallerParams;
+import com.esiran.libtokenagentj.service.ERC20TokenService;
 import com.esiran.libtokenagentj.service.IPFSService;
 import com.esiran.libtokenagentj.service.params.CollectionCreateRequest;
 import com.esiran.libtokenagentj.common.CodeResp;
@@ -10,6 +11,7 @@ import com.esiran.libtokenagentj.common.Hash;
 import com.esiran.libtokenagentj.jsonrpc.RPCClient;
 import com.esiran.libtokenagentj.service.ChainService;
 import com.esiran.libtokenagentj.service.CollectionService;
+import com.esiran.libtokenagentj.service.params.ERC20TokenCreateRequest;
 import com.esiran.libtokenagentj.util.AddressUtil;
 import com.esiran.libtokenagentj.common.Address;
 import org.slf4j.Logger;
@@ -23,6 +25,7 @@ public class TokenAgentClient implements ERC721AgentClient {
     private final CollectionService collectionService;
     private final ChainService chainService;
     private final RPCClient rpcClient;
+    private final ERC20TokenService erc20TokenService;
     private final IPFSService ipfsService;
     private final String blockchain;
     public TokenAgentClient(RPCClient rpcClient, String blockchain) {
@@ -30,6 +33,7 @@ public class TokenAgentClient implements ERC721AgentClient {
         collectionService = new CollectionService(rpcClient);
         chainService = new ChainService(rpcClient);
         ipfsService = new IPFSService(rpcClient);
+        erc20TokenService = new ERC20TokenService(rpcClient);
         this.blockchain = blockchain;
     }
 
@@ -76,6 +80,27 @@ public class TokenAgentClient implements ERC721AgentClient {
 
     public TokenCaller newToken(TokenCallerParams params){
         return new TokenCaller(rpcClient, blockchain, params);
+    }
+
+    @Override
+    public ERC20TokenCreateResult createERC20Token(ERC20TokenCreateParams params, byte[] privateKey) throws Exception {
+        // 构造结构体
+        ERC20TokenCreateRequest erc20TokenCreateRequest = new ERC20TokenCreateRequest();
+        erc20TokenCreateRequest.setBlockchain(blockchain);
+        erc20TokenCreateRequest.setName(params.getName());
+        erc20TokenCreateRequest.setSymbol(params.getSymbol());
+        // 通过私钥解析地址
+        Address fromAddress = AddressUtil.getAddressFromPrivateKey(privateKey);
+        erc20TokenCreateRequest.setFromAddress(fromAddress.toHexString(true));
+        // 请求生成合约字节码
+        CodeResp codeResp = erc20TokenService.requestPreCreate(erc20TokenCreateRequest);
+        // 发送交易
+        Hash txHash = chainService.createAndSendTransaction(codeResp, blockchain, null, privateKey);
+        Address contractAddress = AddressUtil.createAddress(fromAddress, codeResp.getNonce());
+        ERC20TokenCreateResult result = new ERC20TokenCreateResult();
+        result.setTransactionHash(txHash);
+        result.setContractAddress(contractAddress);
+        return result;
     }
 
 

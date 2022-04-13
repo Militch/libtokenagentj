@@ -29,8 +29,8 @@ public class TokenCallerUsage {
         // 调用器参数设置
         TokenCallerParams params = new TokenCallerParams();
         // 合约地址
-        String addressHex = "0xc17d0b6539916ed60b6e90d2d903a0c10204f533";
-        String tokenId = "94717066044169193382142263595429324970959522862051371554070564833528401221679";
+        String addressHex = "0xd0fed130c141ba205912da72295661042258c882";
+        String tokenId = "25051374200040449536707411896171407110051408887527702313459461632648978453186";
         Address contractAddress = Address.ofHex(addressHex);
         params.setTokenId(new BigInteger(tokenId, 10));
         params.setContractAddress(contractAddress);
@@ -42,9 +42,12 @@ public class TokenCallerUsage {
         Address toAddress= keyStorage[1].getAddress();
         log.info("Transfer token to: {}, by token id: {}, from contract address: {}", toAddress.toHexString(true),
                 tokenId, contractAddress.toHexString(true));
-
         Hash txHash = caller.transfer(toAddress, keyStorage[0].getPrivateKey());
-        log.info("Successfully send transfer request wait for mint: transaction hash={}, to: {}, by token id: {}, from contract: {}",
+        log.info("Successfully send transfer request wait for transfer: transaction hash={}, to: {}, by token id: {}, from contract: {}",
                 txHash.toHexString(true), toAddress.toHexString(true), tokenId, contractAddress.toHexString(true));
+        Thread.sleep(90 * 1000);
+        Hash txHash2 = caller.approve(keyStorage[0].getAddress(), keyStorage[0].getPrivateKey());
+        log.info("Successfully send transfer request wait for approve: transaction hash={}, to: {}, by token id: {}, from contract: {}",
+                txHash2.toHexString(true), toAddress.toHexString(true), tokenId, contractAddress.toHexString(true));
     }
 }

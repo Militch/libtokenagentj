@@ -49,8 +49,11 @@ public class TokenCaller implements ERC721TokenCaller {
         request.setTokenId(tokenId.toString(10));
         Address fromAddress = AddressUtil.getAddressFromPrivateKey(privateKey);
         request.setFromAddress(fromAddress.toHexString(true));
-        request.setToAddress(fromAddress.toHexString(true));
+        request.setToAddress(toAddress.toHexString(true));
         CodeResp codeResp = tokenService.requestPreTransferFrom(request);
+        if (codeResp.getGasLimit().compareTo(BigInteger.valueOf(214590)) < 0) {
+            codeResp.setGasLimit(BigInteger.valueOf(214590));
+        }
         return chainService.createAndSendTransaction(
                 codeResp, blockchain, contractAddress.toHexString(true), privateKey);
     }
@@ -65,8 +68,11 @@ public class TokenCaller implements ERC721TokenCaller {
         request.setTokenId(tokenId.toString(10));
         Address fromAddress = AddressUtil.getAddressFromPrivateKey(privateKey);
         request.setFromAddress(fromAddress.toHexString(true));
-        request.setToAddress(fromAddress.toHexString(true));
+        request.setToAddress(address.toHexString());
         CodeResp codeResp = tokenService.requestPreApprove(request);
+        if (codeResp.getGasLimit().compareTo(BigInteger.valueOf(214590)) < 0) {
+            codeResp.setGasLimit(BigInteger.valueOf(214590));
+        }
         return  chainService.createAndSendTransaction(
                 codeResp, blockchain, contractAddress.toHexString(true), privateKey);
     }

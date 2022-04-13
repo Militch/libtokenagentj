@@ -43,7 +43,7 @@ public class CollectionCallerUsage {
         // 调用器参数设置
         CollectionCallerParams params = new CollectionCallerParams();
         // 合约地址
-        String addressHex = "0xc17d0b6539916ed60b6e90d2d903a0c10204f533";
+        String addressHex = "0xd0fed130c141ba205912da72295661042258c882";
         Address contractAddress = Address.ofHex(addressHex);
         params.setAddress(contractAddress);
         // 构造调用器
@@ -55,13 +55,13 @@ public class CollectionCallerUsage {
         log.info("Collection symbol: {}, from contract address: {}", symbol, contractAddress.toHexString(true));
         log.debug("Mite a token from contract address: {}", contractAddress.toHexString(true));
         String filename = "example.gif";
-        URL url = ClassLoader.getSystemResource(filename);
-        File file = new File(url.toURI());
-        String fileCid = tokenAgentClient.uploadFileToIPFS(file);
+//        URL url = ClassLoader.getSystemResource(filename);
+//        File file = new File(url.toURI());
+//        String fileCid = tokenAgentClient.uploadFileToIPFS(file);
         NFTMintParam nftMintParam = new NFTMintParam();
         BigInteger tokenId = randomBigInt();
         nftMintParam.setTokenId(tokenId);
-        nftMintParam.setTokenUri(fileCid);
+        nftMintParam.setTokenUri(UUID.randomUUID().toString());
         Hash txHash = collectionCaller.mintToken(nftMintParam, keyStorage[0].getPrivateKey());
         log.info("Successfully create token: {}, wait for mint: TxHash={}", tokenId, txHash.toHexString(true));
     }
